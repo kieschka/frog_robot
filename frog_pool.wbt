@@ -1,0 +1,177 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "../protos/swimming_frog.proto"
+
+WorldInfo {
+  basicTimeStep        4
+  coordinateSystem     "ENU"
+  gpsCoordinateSystem  "local"
+  lineScale            0.2
+  ERP                  0.2
+  CFM                  0.00001
+  optimalThreadCount   1
+  defaultDamping Damping {
+    linear  0.20
+    angular 0.30
+  }
+  contactProperties [
+    ContactProperties {
+      material1 "default"
+      material2 "default"
+      coulombFriction [ 0.6 ]
+      bounce 0.05
+      bounceVelocity 0.05
+      softCFM 0.001
+    }
+  ]
+}
+
+Viewpoint {
+  orientation -0.34 0.42 0.84 1.30
+  position    -3.5 -3.5 3.0
+  follow      "frog"
+  followSmoothness 0.5
+}
+
+Background { skyColor [ 0.78 0.88 0.97 ] }
+
+DirectionalLight {
+  ambientIntensity 0.6
+  color            1 1 0.96
+  direction        -0.4 -0.4 -0.85
+  intensity        2.2
+  castShadows      TRUE
+}
+DirectionalLight {
+  ambientIntensity 0.5
+  color            0.85 0.92 1.0
+  direction         0.6 -0.3 -0.6
+  intensity        1.3
+  castShadows      FALSE
+}
+
+# ---- Дно ----
+Solid {
+  translation 0 0 -0.02
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.93 0.93 0.91 roughness 0.85 }
+    geometry Box { size 30 30 0.02 }
+  } ]
+  name           "room_floor"
+  boundingObject Box { size 30 30 0.02 }
+}
+
+Solid {
+  translation 0 0 0.005
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.78 0.86 0.92 roughness 0.45 metalness 0.05 }
+    geometry Box { size 8.0 8.0 0.01 }
+  } ]
+  name           "pool_floor"
+  boundingObject Box { size 8.0 8.0 0.01 }
+}
+
+# ---- ВОДА ----
+Fluid {
+  translation 0 0 0.70
+  name        "water"
+  description "swimming pool water at 20 C"
+  density     1000
+  viscosity   0.001
+  streamVelocity 0 0 0
+  boundingObject Box { size 7.96 7.96 1.40 }
+}
+
+# ---- Визуализация воды ----
+Solid {
+  translation 0 0 0.70
+  children [ Shape {
+    appearance PBRAppearance {
+      baseColor 0.30 0.70 0.92
+      transparency 0.55
+      roughness 0.25
+    }
+    geometry Box { size 7.94 7.94 1.38 }
+  } ]
+  name "water_visual"
+}
+
+# ---- Стены бассейна ----
+Solid {
+  translation 0 -4.05 0.78
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.55 0.78 0.95 transparency 0.35 roughness 0.20 }
+    geometry Box { size 8.20 0.10 1.55 }
+  } ]
+  name           "wall_south"
+  boundingObject Box { size 8.20 0.10 1.55 }
+}
+Solid {
+  translation 0 4.05 0.78
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.55 0.78 0.95 transparency 0.35 roughness 0.20 }
+    geometry Box { size 8.20 0.10 1.55 }
+  } ]
+  name           "wall_north"
+  boundingObject Box { size 8.20 0.10 1.55 }
+}
+Solid {
+  translation -4.05 0 0.78
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.55 0.78 0.95 transparency 0.35 roughness 0.20 }
+    geometry Box { size 0.10 8.00 1.55 }
+  } ]
+  name           "wall_west"
+  boundingObject Box { size 0.10 8.00 1.55 }
+}
+Solid {
+  translation 4.05 0 0.78
+  children [ Shape {
+    appearance PBRAppearance { baseColor 0.55 0.78 0.95 transparency 0.35 roughness 0.20 }
+    geometry Box { size 0.10 8.00 1.55 }
+  } ]
+  name           "wall_east"
+  boundingObject Box { size 0.10 8.00 1.55 }
+}
+
+# ---- Целевые точки ----
+Solid {
+  translation 2.5 2.5 0.75
+  children [ Shape {
+    appearance PBRAppearance { baseColor 1.0 0.85 0.10 transparency 0.30 emissiveColor 0.40 0.30 0.0 }
+    geometry Cylinder { height 1.4 radius 0.06 subdivision 16 }
+  } ]
+  name "wp0"
+}
+Solid {
+  translation 2.5 -2.5 0.75
+  children [ Shape {
+    appearance PBRAppearance { baseColor 1.0 0.85 0.10 transparency 0.30 emissiveColor 0.40 0.30 0.0 }
+    geometry Cylinder { height 1.4 radius 0.06 subdivision 16 }
+  } ]
+  name "wp1"
+}
+Solid {
+  translation -2.5 -2.5 0.75
+  children [ Shape {
+    appearance PBRAppearance { baseColor 1.0 0.85 0.10 transparency 0.30 emissiveColor 0.40 0.30 0.0 }
+    geometry Cylinder { height 1.4 radius 0.06 subdivision 16 }
+  } ]
+  name "wp2"
+}
+Solid {
+  translation -2.5 2.5 0.75
+  children [ Shape {
+    appearance PBRAppearance { baseColor 1.0 0.85 0.10 transparency 0.30 emissiveColor 0.40 0.30 0.0 }
+    geometry Cylinder { height 1.4 radius 0.06 subdivision 16 }
+  } ]
+  name "wp3"
+}
+
+# ---- РОБОТ ----
+swimming_frog {
+  translation 0 0 1.20
+  rotation    0 0 1 0
+  name        "frog"
+  controller  "frog_controller"
+}

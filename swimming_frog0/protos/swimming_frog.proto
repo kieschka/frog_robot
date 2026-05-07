@@ -1,0 +1,441 @@
+#VRML_SIM R2025a utf8
+PROTO swimming_frog [
+  field SFVec3f    translation         0 0 1.40
+  field SFRotation rotation            0 0 1 3.14159
+  field SFString   name                "frog"
+  field SFString   controller          "frog_controller"
+  field SFString   customData          ""
+  field SFBool     supervisor          TRUE
+]
+{
+  Robot {
+    translation IS translation
+    rotation    IS rotation
+    name        IS name
+    controller  IS controller
+    customData  IS customData
+    supervisor  IS supervisor
+
+    children [
+      GPS          { name "gps"   }
+      InertialUnit { name "imu"   }
+      Gyro         { name "gyro"  }
+      Accelerometer{ name "accel" }
+
+      # ===== ТЕЛО =====
+      Transform {
+        translation 0 0 0
+        scale       0.21 0.10 0.05
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.32 0.55 0.30
+              roughness 0.55
+              metalness 0.05
+            }
+            geometry Sphere { radius 1 subdivision 4 }
+          }
+        ]
+      }
+
+      # ============== ПРАВАЯ НОГА ==============
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis     0 0 -1
+          anchor   -0.12 0.075 -0.01
+          dampingConstant 0.30
+          minStop -0.7
+          maxStop  1.7
+        }
+        device [
+          RotationalMotor {
+            name        "hipR"
+            maxTorque   4.0
+            maxVelocity 6.0
+            acceleration 100.0
+            minPosition -0.6
+            maxPosition  1.6
+          }
+          PositionSensor { name "hipR_sensor" }
+        ]
+        endPoint Solid {
+          translation -0.12 0.075 -0.01
+          rotation 0 0 1 -0.5236
+          children [
+            Pose {
+              translation -0.065 0 0
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.30 0.50 0.28
+                    roughness 0.55
+                  }
+                  geometry Box { size 0.130 0.040 0.040 }
+                }
+              ]
+            }
+
+            HingeJoint {
+              jointParameters HingeJointParameters {
+                axis     0 0 -1
+                anchor   -0.13 0 0
+                dampingConstant 0.30
+                minStop -2.4
+                maxStop  0.1
+              }
+              device [
+                RotationalMotor {
+                  name        "kneeR"
+                  maxTorque   3.0
+                  maxVelocity 6.0
+                  acceleration 100.0
+                  minPosition -2.3
+                  maxPosition  0.0
+                }
+                PositionSensor { name "kneeR_sensor" }
+              ]
+              endPoint Solid {
+                translation -0.13 0 0
+                rotation 0 0 1 0.349
+                children [
+                  Pose {
+                    translation -0.075 0 0
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.25 0.45 0.23
+                          roughness 0.55
+                        }
+                        geometry Box { size 0.150 0.036 0.036 }
+                      }
+                    ]
+                  }
+
+                  HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis     0 0 -1
+                      anchor   -0.15 0 0
+                      dampingConstant 0.30
+                      minStop -0.7
+                      maxStop  1.4
+                    }
+                    device [
+                      RotationalMotor {
+                        name        "ankleR"
+                        maxTorque   1.6
+                        maxVelocity 6.0
+                        acceleration 100.0
+                        minPosition -0.6
+                        maxPosition  1.3
+                      }
+                      PositionSensor { name "ankleR_sensor" }
+                    ]
+                    endPoint Solid {
+                      translation -0.15 0 0
+                      rotation 0 0 1 -0.5236
+                      children [
+                        Pose {
+                          translation 0 0.06 0
+                          children [
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.18 0.45 0.18
+                                roughness 0.50
+                                metalness 0.05
+                              }
+                              geometry IndexedFaceSet {
+                                coord Coordinate {
+                                  point [
+                                    0.0025 -0.06  0.025
+                                   -0.0025 -0.06  0.025
+                                   -0.0025 -0.06 -0.025
+                                    0.0025 -0.06 -0.025
+                                    0.0025  0.06  0.080
+                                   -0.0025  0.06  0.080
+                                   -0.0025  0.06 -0.080
+                                    0.0025  0.06 -0.080
+                                  ]
+                                }
+                                coordIndex [
+                                  0 1 5 4 -1
+                                  3 7 6 2 -1
+                                  0 4 7 3 -1
+                                  1 2 6 5 -1
+                                  0 3 2 1 -1
+                                  4 5 6 7 -1
+                                ]
+                                creaseAngle 1.0
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name           "footR"
+                      boundingObject Pose {
+                        translation 0 0.06 0
+                        children [ Box { size 0.005 0.13 0.075 } ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 0.10
+                        centerOfMass [0 0.06 0]
+                      }
+                      immersionProperties [ ImmersionProperties {
+                        fluidName                          "water"
+                        dragForceCoefficients              8.00 0.05 0.05
+                        dragTorqueCoefficients             0.02 0.02 0.02
+                        viscousResistanceForceCoefficient  1.0
+                        viscousResistanceTorqueCoefficient 0.05
+                      } ]
+                    }
+                  }
+                ]
+                name           "crusR"
+                boundingObject Pose {
+                  translation -0.075 0 0
+                  children [ Box { size 0.130 0.040 0.040 } ]
+                }
+                physics Physics {
+                  density -1
+                  mass 0.30
+                  centerOfMass [-0.075 0 0]
+                }
+                immersionProperties [ ImmersionProperties {
+                  fluidName                          "water"
+                  dragForceCoefficients              0.05 0.05 0.05
+                  dragTorqueCoefficients             0.01 0.01 0.01
+                  viscousResistanceForceCoefficient  1.0
+                  viscousResistanceTorqueCoefficient 0.02
+                } ]
+              }
+            }
+          ]
+          name           "thighR"
+          boundingObject Pose {
+            translation -0.065 0 0
+            children [ Box { size 0.130 0.040 0.040 } ]
+          }
+          physics Physics {
+            density -1
+            mass 0.30
+            centerOfMass [-0.065 0 0]
+          }
+          immersionProperties [ ImmersionProperties {
+            fluidName                          "water"
+            dragForceCoefficients              0.05 0.05 0.05
+            dragTorqueCoefficients             0.01 0.01 0.01
+            viscousResistanceForceCoefficient  1.0
+            viscousResistanceTorqueCoefficient 0.02
+          } ]
+        }
+      }
+
+      # ============== ЛЕВАЯ НОГА ==============
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis     0 0 1
+          anchor   -0.12 -0.075 -0.01
+          dampingConstant 0.30
+          minStop -0.7
+          maxStop  1.7
+        }
+        device [
+          RotationalMotor {
+            name        "hipL"
+            maxTorque   4.0
+            maxVelocity 6.0
+            acceleration 100.0
+            minPosition -0.6
+            maxPosition  1.6
+          }
+          PositionSensor { name "hipL_sensor" }
+        ]
+        endPoint Solid {
+          translation -0.12 -0.075 -0.01
+          rotation 0 0 1 0.5236
+          children [
+            Pose {
+              translation -0.065 0 0
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.30 0.50 0.28
+                    roughness 0.55
+                  }
+                  geometry Box { size 0.130 0.040 0.040 }
+                }
+              ]
+            }
+
+            HingeJoint {
+              jointParameters HingeJointParameters {
+                axis     0 0 1
+                anchor   -0.13 0 0
+                dampingConstant 0.30
+                minStop -2.4
+                maxStop  0.1
+              }
+              device [
+                RotationalMotor {
+                  name        "kneeL"
+                  maxTorque   3.0
+                  maxVelocity 6.0
+                  acceleration 100.0
+                  minPosition -2.3
+                  maxPosition  0.0
+                }
+                PositionSensor { name "kneeL_sensor" }
+              ]
+              endPoint Solid {
+                translation -0.13 0 0
+                rotation 0 0 1 -0.349
+                children [
+                  Pose {
+                    translation -0.075 0 0
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.25 0.45 0.23
+                          roughness 0.55
+                        }
+                        geometry Box { size 0.150 0.036 0.036 }
+                      }
+                    ]
+                  }
+
+                  HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis     0 0 1
+                      anchor   -0.15 0 0
+                      dampingConstant 0.30
+                      minStop -0.7
+                      maxStop  1.4
+                    }
+                    device [
+                      RotationalMotor {
+                        name        "ankleL"
+                        maxTorque   1.6
+                        maxVelocity 6.0
+                        acceleration 100.0
+                        minPosition -0.6
+                        maxPosition  1.3
+                      }
+                      PositionSensor { name "ankleL_sensor" }
+                    ]
+                    endPoint Solid {
+                      translation -0.15 0 0
+                      rotation 0 0 1 0.5236
+                      children [
+                        Pose {
+                          translation 0 -0.06 0
+                          children [
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.18 0.45 0.18
+                                roughness 0.50
+                                metalness 0.05
+                              }
+                              geometry IndexedFaceSet {
+                                coord Coordinate {
+                                  point [
+                                    0.0025  0.07  0.005
+                                   -0.0025  0.07  0.005
+                                   -0.0025  0.07 -0.005
+                                    0.0025  0.07 -0.005
+                                    0.0025 -0.06  0.080
+                                   -0.0025 -0.06  0.080
+                                   -0.0025 -0.06 -0.080
+                                    0.0025 -0.06 -0.080
+                                  ]
+                                }
+                                coordIndex [
+                                  0 1 5 4 -1
+                                  3 7 6 2 -1
+                                  0 4 7 3 -1
+                                  1 2 6 5 -1
+                                  0 3 2 1 -1
+                                  4 5 6 7 -1
+                                ]
+                                creaseAngle 1.0
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name           "footL"
+                      boundingObject Pose {
+                        translation 0 -0.06 0
+                        children [ Box { size 0.005 0.13 0.075 } ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 0.10
+                        centerOfMass [0 -0.06 0]
+                      }
+                      immersionProperties [ ImmersionProperties {
+                        fluidName                          "water"
+                        dragForceCoefficients              8.00 0.05 0.05
+                        dragTorqueCoefficients             0.02 0.02 0.02
+                        viscousResistanceForceCoefficient  1.0
+                        viscousResistanceTorqueCoefficient 0.05
+                      } ]
+                    }
+                  }
+                ]
+                name           "crusL"
+                boundingObject Pose {
+                  translation -0.075 0 0
+                  children [ Box { size 0.130 0.040 0.040 } ]
+                }
+                physics Physics {
+                  density -1
+                  mass 0.30
+                  centerOfMass [-0.075 0 0]
+                }
+                immersionProperties [ ImmersionProperties {
+                  fluidName                          "water"
+                  dragForceCoefficients              0.05 0.05 0.05
+                  dragTorqueCoefficients             0.01 0.01 0.01
+                  viscousResistanceForceCoefficient  1.0
+                  viscousResistanceTorqueCoefficient 0.02
+                } ]
+              }
+            }
+          ]
+          name           "thighL"
+          boundingObject Pose {
+            translation -0.065 0 0
+            children [ Box { size 0.130 0.040 0.040 } ]
+          }
+          physics Physics {
+            density -1
+            mass 0.30
+            centerOfMass [-0.065 0 0]
+          }
+          immersionProperties [ ImmersionProperties {
+            fluidName                          "water"
+            dragForceCoefficients              0.05 0.05 0.05
+            dragTorqueCoefficients             0.01 0.01 0.01
+            viscousResistanceForceCoefficient  1.0
+            viscousResistanceTorqueCoefficient 0.02
+          } ]
+        }
+      }
+    ]
+
+    name IS name
+    boundingObject Box { size 0.42 0.20 0.10 }
+    physics Physics {
+      density -1
+      mass 5.5
+      centerOfMass [ 0 0 -0.025 ]
+    }
+    immersionProperties [ ImmersionProperties {
+      fluidName                          "water"
+      dragForceCoefficients              0.08 0.40 0.40
+      dragTorqueCoefficients             0.05 0.05 0.05
+      viscousResistanceForceCoefficient  1.0
+      viscousResistanceTorqueCoefficient 0.05
+    } ]
+  }
+}
